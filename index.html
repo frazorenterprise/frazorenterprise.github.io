@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frazor - Bring Your Ideas to Life</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f9fafb; /* Slightly off-white for a softer look */
+        }
+        #hero-canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .section-title-underline {
+            display: inline-block;
+            position: relative;
+            padding-bottom: 10px; /* Increased padding */
+            margin-bottom: 1rem; /* Added margin below title group */
+        }
+        .section-title-underline::after {
+            content: '';
+            position: absolute;
+            left: 50%; /* Center the underline */
+            transform: translateX(-50%); /* Center the underline */
+            bottom: 0;
+            width: 70px; /* Wider underline */
+            height: 4px; /* Thicker underline */
+            background-color: #2563eb; /* Darker blue for more contrast */
+            border-radius: 2px;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.4s ease;
+            border-radius: 12px; /* More rounded corners */
+        }
+        .card:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e5e7eb; /* Lighter track */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #9ca3af; /* Softer thumb color */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* Darker on hover */
+        }
+        #heroCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .icon-style {
+            margin-right: 8px;
+        }
+        .product-card-image {
+            width: 100%;
+            height: 180px; /* Fixed height for product images */
+            object-fit: cover; /* Ensures image covers the area nicely */
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            background-color: #e5e7eb; /* Placeholder background */
+        }
+        .client-logo {
+            height: 60px; /* Fixed height for client logos */
+            width: auto;
+            max-width: 150px;
+            object-fit: contain; /* To keep aspect ratio */
+            margin-bottom: 1rem;
+            background-color: #f0f0f0; /* Placeholder background */
+            padding: 5px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header id="header" class="bg-white shadow-lg fixed w-full z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-blue-600 flex items-center">
+                <i class="fas fa-rocket text-blue-500 mr-2"></i> Frazor
+            </a>
+            <nav class="hidden md:flex items-center">
+                <ul class="flex space-x-5">
+                    <li><a href="#about" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-base font-medium">About</a></li>
+                    <li><a href="#products" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-base font-medium">Products</a></li>
+                    <li><a href="#clients" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-base font-medium">Clients</a></li>
+                    <li><a href="#vision" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-base font-medium">Vision</a></li>
+                    <li><a href="contact.html" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-base font-medium">Contact Us</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-xl">
+            <ul class="flex flex-col items-center py-3 space-y-2">
+                <li><a href="#about" class="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 w-full text-center mobile-nav-link">About</a></li>
+                <li><a href="#products" class="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 w-full text-center mobile-nav-link">Products</a></li>
+                <li><a href="#clients" class="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 w-full text-center mobile-nav-link">Clients</a></li>
+                <li><a href="#vision" class="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 w-full text-center mobile-nav-link">Vision</a></li>
+                <li><a href="contact.html" class="block px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all duration-200 w-full text-center mobile-nav-link">Contact Us</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section id="hero" class="relative h-screen flex items-center justify-center text-center bg-gradient-to-br from-gray-900 to-blue-900 overflow-hidden">
+        <div id="hero-canvas-container">
+            <canvas id="heroCanvas"></canvas>
+        </div>
+        <div class="hero-content p-6">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight">
+                <span class="block">Frazor</span>
+            </h1>
+            <p class="text-2xl md:text-4xl text-blue-300 mb-10 font-light">Bring Your Ideas to Life</p>
+            <a href="#about" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 px-10 rounded-lg text-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                <i class="fas fa-arrow-down icon-style"></i>Discover More
+            </a>
+        </div>
+    </section>
+    
+    <main class="pt-16"> <section id="about" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800">
+                    <i class="fas fa-building icon-style text-blue-500"></i>
+                    <span class="section-title-underline">About Frazor</span>
+                </h2>
+                <p class="text-center text-gray-600 mb-16 text-xl">The vital bridge between invention and innovation.</p>
+                <div class="max-w-4xl mx-auto text-gray-700 space-y-6 text-lg leading-relaxed bg-gray-50 p-8 md:p-12 rounded-xl shadow-sm">
+                    <p>Frazor stands as a distinguished Software as a Service (SAAS) startup, proudly recognized by the Department for Promotion of Industry and Internal Trade (DPIIT), IStart Rajasthan, and the Ministry of Information and Technology under the auspices of Meity Startup India.</p>
+                    <p>Our mission is to serve as the vital bridge between invention and innovation, guiding businesses through change and disruption.</p>
+                    <p>Frazor is dedicated to empowering enterprises with cutting-edge software solutions and a robust platform, designed to redefine the customer experience and enhance in-house productivity through automation and seamless integration. By skillfully fusing technology to meet specific business needs, we are dedicated to enhancing overall business efficiency.</p>
+                    <p>Since our inception in 2021, Frazor has consistently delivered innovative solutions to an array of clients spanning finance, FMCG, and various other domains. Notably, Frazor's proprietary "Frazor Open Connect" platform for no-code integration expedites the integration process for businesses, translating into substantial savings in terms of development costs, time, and the expertise required to execute enterprise-level integrations. Our commitment to efficiency and excellence remains unwavering, as we continue to drive businesses forward in an ever-evolving digital landscape.</p>
+                </div>
+                <div class="text-center mt-12">
+                     <a href="https://frazor.in/" target="_blank" rel="noopener noreferrer" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors duration-300 transform hover:scale-105 shadow-md">
+                        <i class="fas fa-external-link-alt icon-style"></i>Our Full Product Portfolio
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="py-20 md:py-28 bg-gray-100">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800">
+                    <i class="fas fa-cubes icon-style text-blue-500"></i>
+                    <span class="section-title-underline">Our Top Products</span>
+                </h2>
+                <p class="text-center text-gray-600 mb-16 text-xl">Innovative solutions tailored for your business needs.</p>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="card bg-white shadow-xl overflow-hidden flex flex-col">
+                        <img src="https://placehold.co/600x360/3B82F6/FFFFFF?text=Frazor+OMS" alt="Frazor OMS" class="product-card-image">
+                        <div class="p-8 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-semibold text-blue-600 mb-2">Frazor OMS</h3>
+                            <p class="text-sm text-gray-500 mb-3">(Order Management System)</p>
+                            <p class="text-gray-700 mb-4 leading-relaxed flex-grow">Seamlessly initiate and monitor order requests through an intuitive web application. Oversee the entire product life cycle and foster dynamic communication.</p>
+                            <p class="text-lg font-semibold text-green-600 mb-4">Starts from ₹20,000 / month</p>
+                            <a href="https://drive.google.com/file/d/127pbCXtc-9QPKdWcJdOKx0d8l0WPJxik/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="mt-auto self-start bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-lg transition-colors duration-300">
+                                <i class="fas fa-eye icon-style"></i>View Showcase
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card bg-white shadow-xl overflow-hidden flex flex-col">
+                        <img src="https://placehold.co/600x360/10B981/FFFFFF?text=Frazor+Rocket+Singh" alt="Frazor Rocket Singh" class="product-card-image">
+                        <div class="p-8 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-semibold text-green-600 mb-2">Frazor Rocket Singh</h3>
+                            <p class="text-sm text-gray-500 mb-3">(Customer Relationship Management)</p>
+                            <p class="text-gray-700 mb-4 leading-relaxed flex-grow">Elevate customer engagement by efficiently managing interactions, enhancing data management, and tailoring communication strategies.</p>
+                            <p class="text-lg font-semibold text-green-600 mb-4">Starts from ₹25,000 / month</p>
+                             <a href="https://drive.google.com/file/d/1Y73OkPcKykWpCM0Wnswdv0mFnTFnY7JD/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-5 rounded-lg transition-colors duration-300">
+                                <i class="fas fa-eye icon-style"></i>View Showcase
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card bg-white shadow-xl overflow-hidden flex flex-col">
+                         <img src="https://placehold.co/600x360/EF4444/FFFFFF?text=Frazor+Next+Gen" alt="Frazor Next Gen" class="product-card-image">
+                        <div class="p-8 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-semibold text-red-600 mb-2">Frazor Next Gen</h3>
+                            <p class="text-sm text-gray-500 mb-3">(WhatsApp-based Enterprise Solution)</p>
+                            <p class="text-gray-700 mb-4 leading-relaxed flex-grow">Harness AI and WhatsApp to revolutionize customer engagement. Place orders, make payments, and track orders directly via WhatsApp.</p>
+                            <p class="text-lg font-semibold text-green-600 mb-4">Starts from ₹30,000 / month</p>
+                            <a href="https://drive.google.com/file/d/1tSD8ayjDUKDonGBwVxS5VKei-_5mP-pP/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="mt-auto self-start bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-5 rounded-lg transition-colors duration-300">
+                                <i class="fas fa-eye icon-style"></i>View Showcase
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="clients" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-gray-800">
+                    <i class="fas fa-users icon-style text-blue-500"></i>
+                    <span class="section-title-underline">Our Top Clients</span>
+                </h2>
+                 <p class="text-center text-gray-600 mb-16 text-xl">Trusted by leading organizations.</p>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <div class="card bg-gray-50 p-8 rounded-xl shadow-lg border border-gray-200 text-center">
+                        <img src="https://placehold.co/150x60/0EA5E9/FFFFFF?text=KSKT+Logo" alt="KSKT Logo" class="client-logo mx-auto">
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-3">KSKT - Kissan se Kitchen Tak</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Pioneered a WhatsApp-based eCommerce solution for online grocery, featuring photo-based shopping, embedded browser experience, and seamless payments.</p>
+                        <p class="font-semibold text-blue-600">Key Features:</p>
+                        <ul class="list-disc list-inside text-gray-600 mt-2 space-y-1 text-left max-w-xs mx-auto">
+                            <li>Photo-based grocery orders via WhatsApp.</li>
+                            <li>Embedded browser experience.</li>
+                            <li>Seamless payment integration.</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-gray-50 p-8 rounded-xl shadow-lg border border-gray-200 text-center">
+                        <img src="https://placehold.co/150x60/F59E0B/FFFFFF?text=NPCI+Logo" alt="NPCI Logo" class="client-logo mx-auto">
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-3">NPCI - National Payment Corporation of India</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Conducted a Proof of Concept for the "Bharat One" platform, an Information Exchange Platform for bill payments and financial transactions.</p>
+                         <p class="font-semibold text-amber-600">Project Highlight:</p>
+                        <p class="text-gray-600 mt-2">Development of "Bharat One" POC, launched at Global Fintech Fest 2021.</p>
+                    </div>
+                    <div class="card bg-gray-50 p-8 rounded-xl shadow-lg border border-gray-200 text-center">
+                        <img src="https://placehold.co/150x60/84CC16/FFFFFF?text=Flookup+Logo" alt="Flookup Logo" class="client-logo mx-auto">
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-3">Flookup - Finance Lookup Advisor</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Deployed Compliance Manager and Company Onboarding platform for seamless business onboarding, unified record management, and Single Sign-On access.</p>
+                        <p class="font-semibold text-lime-600">Solutions Deployed:</p>
+                        <ul class="list-disc list-inside text-gray-600 mt-2 space-y-1 text-left max-w-xs mx-auto">
+                            <li>Compliance Manager Platform.</li>
+                            <li>Company Onboarding Platform.</li>
+                            <li>Single Sign-On Access.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vision" class="py-20 md:py-28 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <i class="fas fa-bullseye icon-style"></i>
+                    <span class="section-title-underline after:bg-white">Our Vision</span>
+                </h2>
+                <p class="text-xl md:text-3xl max-w-3xl mx-auto mt-10 leading-relaxed font-light">
+                    To be recognized as a leading company empowering Enterprises with innovation and technology.
+                </p>
+            </div>
+        </section>
+
+        <section id="quote" class="py-20 md:py-28 bg-gray-100">
+            <div class="container mx-auto px-6 text-center">
+                <i class="fas fa-quote-left text-5xl text-blue-400 mb-6"></i>
+                <blockquote class="text-2xl md:text-4xl italic text-gray-700 max-w-3xl mx-auto leading-relaxed font-serif">
+                    “We’re here to put a dent in the universe. Otherwise why else even be here?”
+                </blockquote>
+                <p class="mt-8 text-xl text-gray-500">- Steve Jobs</p>
+            </div>
+        </section>
+    </main>
+
+    <section id="contact-teaser" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-envelope-open-text icon-style text-blue-500"></i>
+                <span class="section-title-underline">Ready to Innovate?</span>
+            </h2>
+            <p class="text-gray-600 mt-8 mb-10 text-xl max-w-2xl mx-auto">
+                Let's discuss how Frazor can tailor solutions to elevate your business. Reach out to our team today.
+            </p>
+            <a href="contact.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-10 rounded-lg text-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                <i class="fas fa-paper-plane icon-style"></i>Get In Touch
+            </a>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-300 py-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold text-white mb-4">Frazor</h3>
+                    <p class="text-gray-400">Bring Your Ideas to Life. Empowering enterprises with cutting-edge software solutions.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="hover:text-blue-400 transition-colors">About Us</a></li>
+                        <li><a href="#products" class="hover:text-blue-400 transition-colors">Our Products</a></li>
+                        <li><a href="#clients" class="hover:text-blue-400 transition-colors">Client Success</a></li>
+                        <li><a href="https://frazor.in/" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">Full Portfolio</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="tnc.html" class="hover:text-blue-400 transition-colors">Terms & Conditions</a></li>
+                        <li><a href="privacy-policy.html" class="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="refund-policy.html" class="hover:text-blue-400 transition-colors">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Connect</h3>
+                    <ul class="space-y-2">
+                         <li><a href="contact.html" class="hover:text-blue-400 transition-colors">Contact Us</a></li>
+                         <li><a href="mailto:contact@frazor.in" class="hover:text-blue-400 transition-colors">contact@frazor.in</a></li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center">
+                <p>&copy; <span id="currentYear"></span> Frazor. All rights reserved.</p>
+                <p class="text-sm mt-2 text-gray-500">Pioneering SAAS solutions for a dynamic world.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for interactive elements
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Check if the link is to an ID on the current page
+                if (this.pathname === window.location.pathname && this.hash) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const headerOffset = document.getElementById('header').offsetHeight || 70; // Dynamic or fallback
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                        // Close mobile menu if open
+                        if (targetId !== '#' && mobileMenu.classList.contains('hidden') === false) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                }
+                // For links to other pages (like contact.html), let the default browser action occur.
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const body = document.body;
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            // Optional: Prevent body scroll when mobile menu is open
+            // body.classList.toggle('overflow-hidden'); 
+        });
+        
+        // Close mobile menu when a link is clicked (for SPA links)
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.getAttribute('href').startsWith('#')) { // Only for hash links on the same page
+                    mobileMenu.classList.add('hidden');
+                    // body.classList.remove('overflow-hidden');
+                }
+                // For links to other pages, the page will reload anyway.
+            });
+        });
+
+
+        // Header shrink on scroll
+        const header = document.getElementById('header');
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > 50) {
+                header.classList.add('py-2', 'shadow-xl'); // More pronounced shadow on scroll
+                header.classList.remove('py-3'); // Adjusted padding for shrink
+            } else {
+                header.classList.add('py-3');
+                header.classList.remove('py-2', 'shadow-xl');
+            }
+
+            // Optional: Hide header on scroll down, show on scroll up
+            // if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight){
+            //     header.style.top = `-${header.offsetHeight}px`; 
+            // } else {
+            //     header.style.top = "0";
+            // }
+            // lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        });
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Three.js Hero Animation
+        let scene, camera, renderer, particles, container;
+        let mouseX = 0, mouseY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+
+        function initThreeJS() {
+            container = document.getElementById('hero-canvas-container');
+            if (!container) {
+                console.warn("Three.js canvas container not found. Skipping animation.");
+                return;
+            }
+            const canvas = document.getElementById('heroCanvas');
+            if (!canvas) {
+                 console.warn("Three.js canvas element not found. Skipping animation.");
+                return;
+            }
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0a192f, 0.001); // Adjusted fog density
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 1, 3000); // Increased far plane
+            camera.position.z = 600; // Slightly further back
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setClearColor(0x000000, 0); 
+
+            // Particles
+            const particleCount = 7000; // Increased particle count
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            const color = new THREE.Color();
+
+            const baseColor1 = new THREE.Color(0x3b82f6); // Tailwind blue-500
+            const baseColor2 = new THREE.Color(0x60a5fa); // Tailwind blue-400
+            const whiteColor = new THREE.Color(0xffffff);
+
+
+            for (let i = 0; i < particleCount; i++) {
+                const x = Math.random() * 2500 - 1250; // Wider spread
+                const y = Math.random() * 2500 - 1250;
+                const z = Math.random() * 2500 - 1250;
+                positions.push(x, y, z);
+
+                // Colors (mix of blues and white)
+                let particleColor;
+                const rand = Math.random();
+                if (rand < 0.4) {
+                    particleColor = baseColor1;
+                } else if (rand < 0.8) {
+                    particleColor = baseColor2;
+                } else {
+                    particleColor = whiteColor;
+                }
+                colors.push(particleColor.r, particleColor.g, particleColor.b);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2.0, // Slightly smaller particles
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false // Important for correct blending with fog
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            // Event Listeners
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            document.addEventListener('touchstart', onDocumentTouchStart, { passive: false });
+            document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
+            window.addEventListener('resize', onWindowResize, false);
+            
+            onWindowResize(); 
+        }
+
+        function onWindowResize() {
+            if (!container || !renderer || !camera) return; 
+
+            windowHalfX = container.clientWidth / 2;
+            windowHalfY = container.clientHeight / 2;
+
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = event.clientX - windowHalfX;
+            mouseY = event.clientY - windowHalfY;
+        }
+
+        function onDocumentTouchStart(event) {
+            if (event.touches.length === 1) {
+                event.preventDefault(); // Prevent default only if interaction is intended for canvas
+                mouseX = event.touches[0].pageX - windowHalfX;
+                mouseY = event.touches[0].pageY - windowHalfY;
+            }
+        }
+
+        function onDocumentTouchMove(event) {
+            if (event.touches.length === 1) {
+                event.preventDefault(); // Prevent default only if interaction is intended for canvas
+                mouseX = event.touches[0].pageX - windowHalfX;
+                mouseY = event.touches[0].pageY - windowHalfY;
+            }
+        }
+        
+        let animationFrameId = null;
+        function animateThreeJS() {
+            if (!particles || !camera || !renderer || !scene) return; 
+            animationFrameId = requestAnimationFrame(animateThreeJS);
+            renderThreeJS();
+        }
+
+        function renderThreeJS() {
+            const time = Date.now() * 0.00003; // Slower overall animation speed
+
+            camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.015; // More subtle camera follow
+            camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.015;
+            camera.lookAt(scene.position);
+
+            particles.rotation.x = time * 0.15;
+            particles.rotation.y = time * 0.1;
+            
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('load', function() {
+            if (typeof THREE !== 'undefined') {
+                initThreeJS();
+                // Only start animation if init was successful (container found)
+                if (document.getElementById('hero-canvas-container')) {
+                     // Check if animation is already running to prevent multiple loops
+                    if (animationFrameId === null) { 
+                        animateThreeJS();
+                    }
+                }
+            } else {
+                console.error("Three.js library not found.");
+            }
+        });
+
+        // Cleanup Three.js on page unload or if element is removed (for SPAs, though not strictly needed here)
+        window.addEventListener('beforeunload', () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (renderer) {
+                renderer.dispose();
+            }
+            if (scene) {
+                // Dispose geometries and materials
+                scene.traverse(object => {
+                    if (object.geometry) object.geometry.dispose();
+                    if (object.material) {
+                        if (Array.isArray(object.material)) {
+                            object.material.forEach(material => material.dispose());
+                        } else {
+                            object.material.dispose();
+                        }
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
